@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "756787941618",
+    "firebase_url": "https://oauthfrebaseexdemo.firebaseio.com",
+    "project_id": "oauthfrebaseexdemo",
+    "storage_bucket": "oauthfrebaseexdemo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:756787941618:android:e418ab449bcfb64a",
+        "android_client_info": {
+          "package_name": "fu.alfie.com.oauthfirebaseexdemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "756787941618-f3qehc7a29ojkavgsf1s6ap4ifnbs9nf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fu.alfie.com.oauthfirebaseexdemo",
+            "certificate_hash": "1bacacb6c120bccd501d2eb0d984baf9f84ffd71"
+          }
+        },
+        {
+          "client_id": "756787941618-d7jfqfk2uinjbju53r1gchgjg1lulrd2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrlvjToU1kEyjpJyP2jaxa8BFsVzP0X5M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "756787941618-d7jfqfk2uinjbju53r1gchgjg1lulrd2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
