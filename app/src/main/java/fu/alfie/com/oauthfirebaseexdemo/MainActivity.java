@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.facebook.FacebookSdk;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -44,9 +43,7 @@ public class MainActivity extends AppCompatActivity {
                     .setAvailableProviders(Arrays.asList(
                             new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
                             new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
-                            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
-                            new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
-                            new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()
+                            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
                     ))
                     .build(),RC_SIGN_IN);
         }
