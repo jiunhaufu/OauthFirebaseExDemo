@@ -10,71 +10,111 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int RC_SIGN_IN = 0;
-    private FirebaseAuth firebaseAuth;
-    private TextView textView;
+    private static final int RC_SIGN_IN = 123;
+    private List<AuthUI.IdpConfig> providers;
+    private FirebaseAuth mAuth;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        printhashkey();
-        textView = (TextView)findViewById(R.id.textView);
-        firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() != null){
+        //printhashkey();
 
-        }else {
-            startActivityForResult(AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setIsSmartLockEnabled(false)
-                    .setAvailableProviders(Arrays.asList(
-                            new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                            new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
-                            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
-                    ))
-                    .build(),RC_SIGN_IN);
+        mAuth = FirebaseAuth.getInstance();
+        providers = Arrays.asList(
+                new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
+                new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
+                new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()
+        );
+    }
+
+    @Override
+    protected void onStart() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
+        super.onStart();
+    }
+
+    private void updateUI(FirebaseUser user) {
+        TextView textView = (TextView)findViewById(R.id.textView);
+        ImageView imageView = (ImageView)findViewById(R.id.imageView);
+
+        if (user != null){
+            textView.setText(
+                     user.getDisplayName()+"\n"
+                    +user.getEmail()+"\n"
+                    +user.getUid());
+            if (user.getPhotoUrl() != null){
+                new DownloadImageTask(imageView).execute(String.valueOf(user.getPhotoUrl()));
+            }
+        }else{
+            textView.setText("Logout");
+            imageView.setImageResource(R.mipmap.ic_launcher);
         }
     }
+
+    public void onLoginClick(View view) {
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setIsSmartLockEnabled(false)
+                        .setLogo(R.mipmap.ic_launcher_round) // Set logo drawable
+                        .setTheme(R.style.Theme_AppCompat_Light_NoActionBar) // Set theme
+                        .setTosUrl("https://superapp.example.com/terms-of-service.html")  //Set terms of service
+                        .setPrivacyPolicyUrl("https://superapp.example.com/privacy-policy.html")  //Set privacy policy
+                        .build(),
+                RC_SIGN_IN);
+    }
+
+    public void onLogoutClick(View view) {
+        AuthUI.getInstance()
+                .signOut(this) //登出帳號
+                //.delete(this)  //刪除帳號
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        updateUI(null);
+                    }
+                });
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN){
+            IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK){
-                textView.setText(firebaseAuth.getCurrentUser().getEmail());
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                updateUI(user);
             }else {
-                textView.setText("Login Error");
+                updateUI(null);
             }
         }
     }
 
-
-    public void onLogoutClick(View view) {
-        AuthUI.getInstance().signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        finish();
-                    }
-                });
-    }
-
+    //facebook
     public void printhashkey(){
-
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
                     "fu.alfie.com.oauthfirebaseexdemo",
