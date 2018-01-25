@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -17,15 +18,22 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
@@ -36,13 +44,16 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int RC_SIGN_IN = 123;
+    private static final int RC_SIGN_IN = 1;
+    private static final int GOOGLE_SIGN_IN = 2;
     private List<AuthUI.IdpConfig> providers;
     private FirebaseAuth mAuth;
     //phone
     public PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     public String mVerificationId;
     public PhoneAuthProvider.ForceResendingToken mResendToken;
+    //google
+    public GoogleSignInClient mGoogleSignInClient;
 
 
     @Override
@@ -61,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         );
 
         initPhoneLogin();
+        initGoogleLogin();
     }
 
     @Override
@@ -123,6 +135,16 @@ public class MainActivity extends AppCompatActivity {
                 updateUI(user);
             }else {
                 updateUI(null);
+            }
+        }
+        if (requestCode == GOOGLE_SIGN_IN){
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // ...
             }
         }
     }
@@ -240,6 +262,35 @@ public class MainActivity extends AppCompatActivity {
     public void onPhoneVerificationClick(View view){
         EditText code = (EditText)findViewById(R.id.editText3);
         phoneVerification(String.valueOf(code.getText()));
+    }
+
+    private void initGoogleLogin() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            updateUI(null);
+                        }
+                    }
+                });
+    }
+
+    public void onGoogleSigninClick(View view){
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, GOOGLE_SIGN_IN);
     }
 
     //facebook

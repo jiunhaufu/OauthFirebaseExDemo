@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">OauthFirebaseDemo</string>
 
-    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
+    <!-- Facebook -->
     <string name="facebook_application_id" translatable="false">250648158786381</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb250648158786381</string>
-    <!-- Twitter consumer key and secret -->
+    <!-- Twitter -->
     <string name="twitter_consumer_key" translatable="false">T0BWM3pw5btscR2xEDxcQZhBQ</string>
     <string name="twitter_consumer_secret" translatable="false">OppOkCJgqslPi8z6Ok34RhVOcZSL47VnBXoz0boi7VaDOmQxXQ</string>
 </resources>
