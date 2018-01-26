@@ -112,6 +112,12 @@
                 android:onClick="onGoogleSigninClick"
                 android:text="Google Sign in" />
 
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/button_facebook_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp" />
+
         </LinearLayout>
 
     </ScrollView>
