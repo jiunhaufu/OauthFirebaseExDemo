@@ -116,7 +116,14 @@
                 android:id="@+id/button_facebook_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_margin="10dp" />
+
+            <Button
+                android:id="@+id/button9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Facebook Login" />
 
         </LinearLayout>
 

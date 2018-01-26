@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -307,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFacebookLogin(){
         mCallbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = findViewById(R.id.button_facebook_login);
+        final LoginButton loginButton = findViewById(R.id.button_facebook_login);
         loginButton.setReadPermissions("email", "public_profile");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -325,6 +326,15 @@ public class MainActivity extends AppCompatActivity {
                 // ...
             }
         });
+        //客製按鈕取代原生按鈕
+        Button button = (Button)findViewById(R.id.button9);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginButton.performClick();
+            }
+        });
+
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
@@ -342,7 +352,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
     //facebook
     public void printhashkey(){
